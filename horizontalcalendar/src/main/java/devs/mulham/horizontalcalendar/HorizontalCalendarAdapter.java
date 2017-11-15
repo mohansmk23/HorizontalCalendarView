@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @author Mulham-Raee
  * @version 1.1
- * See {devs.mulham.horizontalcalendar.R.layout#item_calendar} Calendar CustomItem Layout
+ *          See {devs.mulham.horizontalcalendar.R.layout#item_calendar} Calendar CustomItem Layout
  */
 class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarAdapter.DayViewHolder> {
 
@@ -58,7 +58,7 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
         holder.rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(holder.getAdapterPosition() == -1)
+                if (holder.getAdapterPosition() == -1)
                     return;
 
                 Date date = datesList.get(holder.getAdapterPosition());
@@ -140,7 +140,7 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
 
     @Override
     public void onBindViewHolder(DayViewHolder holder, int position, List<Object> payloads) {
-        if ((payloads == null) || payloads.isEmpty()){
+        if ((payloads == null) || payloads.isEmpty()) {
             onBindViewHolder(holder, position);
             return;
         }
@@ -179,13 +179,13 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
         return datesList.size();
     }
 
-    public Date getItem(int position) {
-        return datesList.get(position);
-    }
-
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    public Date getItem(int position) {
+        return datesList.get(position);
     }
 
     /**

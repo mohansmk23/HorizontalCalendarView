@@ -16,16 +16,15 @@ import android.util.TypedValue;
  */
 public class HorizontalCalendarView extends RecyclerView {
 
+    private final float FLING_SCALE_DOWN_FACTOR = 0.5f;
+    private final float DEFAULT_TEXT_SIZE_MONTH_NAME = 14f;
+    private final float DEFAULT_TEXT_SIZE_DAY_NUMBER = 24f;
+    private final float DEFAULT_TEXT_SIZE_DAY_NAME = 14f;
     private int textColorNormal, textColorSelected;
     private Drawable selectedDateBackground;
     private int selectorColor;
     private float textSizeMonthName, textSizeDayNumber, textSizeDayName;
     private HorizontalCalendar horizontalCalendar;
-
-    private final float FLING_SCALE_DOWN_FACTOR = 0.5f;
-    private final float DEFAULT_TEXT_SIZE_MONTH_NAME = 14f;
-    private final float DEFAULT_TEXT_SIZE_DAY_NUMBER = 24f;
-    private final float DEFAULT_TEXT_SIZE_DAY_NAME = 14f;
 
     public HorizontalCalendarView(Context context) {
         super(context);
@@ -56,19 +55,6 @@ public class HorizontalCalendarView extends RecyclerView {
         }
     }
 
-    /**
-     *  get the raw value from a complex value ( Ex: complex = 14sp, returns 14)
-     */
-    private float getRawSizeValue(TypedArray a ,int index, float defValue){
-        TypedValue outValue = new TypedValue();
-        boolean result = a.getValue(index, outValue);
-        if (!result){
-            return defValue;
-        }
-
-        return TypedValue.complexToFloat(outValue.data);
-    }
-
     @Override
     public boolean fling(int velocityX, int velocityY) {
         velocityX *= FLING_SCALE_DOWN_FACTOR; // (between 0 for no fling, and 1 for normal fling, or more for faster fling).
@@ -86,14 +72,6 @@ public class HorizontalCalendarView extends RecyclerView {
 
     }
 
-    public float getSmoothScrollSpeed() {
-        return getLayoutManager().getSmoothScrollSpeed();
-    }
-
-    public void setSmoothScrollSpeed(float smoothScrollSpeed) {
-        getLayoutManager().setSmoothScrollSpeed(smoothScrollSpeed);
-    }
-
     @Override
     public HorizontalCalendarAdapter getAdapter() {
         return (HorizontalCalendarAdapter) super.getAdapter();
@@ -102,6 +80,27 @@ public class HorizontalCalendarView extends RecyclerView {
     @Override
     public HorizontalLayoutManager getLayoutManager() {
         return (HorizontalLayoutManager) super.getLayoutManager();
+    }
+
+    /**
+     * get the raw value from a complex value ( Ex: complex = 14sp, returns 14)
+     */
+    private float getRawSizeValue(TypedArray a, int index, float defValue) {
+        TypedValue outValue = new TypedValue();
+        boolean result = a.getValue(index, outValue);
+        if (!result) {
+            return defValue;
+        }
+
+        return TypedValue.complexToFloat(outValue.data);
+    }
+
+    public float getSmoothScrollSpeed() {
+        return getLayoutManager().getSmoothScrollSpeed();
+    }
+
+    public void setSmoothScrollSpeed(float smoothScrollSpeed) {
+        getLayoutManager().setSmoothScrollSpeed(smoothScrollSpeed);
     }
 
     private int fetchAccentColor() {

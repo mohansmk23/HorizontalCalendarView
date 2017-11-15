@@ -16,14 +16,14 @@ public class HorizontalSnapHelper extends LinearSnapHelper {
     public View findSnapView(RecyclerView.LayoutManager layoutManager) {
         View snapView = super.findSnapView(layoutManager);
 
-        if (horizontalCalendar.calendarView.getScrollState() != RecyclerView.SCROLL_STATE_DRAGGING){
+        if (horizontalCalendar.calendarView.getScrollState() != RecyclerView.SCROLL_STATE_DRAGGING) {
             int selectedItemPosition;
-            if (snapView == null){
+            if (snapView == null) {
                 // no snapping required
                 selectedItemPosition = horizontalCalendar.getSelectedDatePosition();
             } else {
                 int[] snapDistance = calculateDistanceToFinalSnap(layoutManager, snapView);
-                if ((snapDistance[0] != 0) || (snapDistance[1] != 0)){
+                if ((snapDistance[0] != 0) || (snapDistance[1] != 0)) {
                     return snapView;
                 }
                 selectedItemPosition = layoutManager.getPosition(snapView);
@@ -45,7 +45,7 @@ public class HorizontalSnapHelper extends LinearSnapHelper {
         attachToRecyclerView();
     }
 
-    private void attachToRecyclerView(){
+    private void attachToRecyclerView() {
         super.attachToRecyclerView(horizontalCalendar.calendarView);
     }
 }

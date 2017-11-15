@@ -27,39 +27,34 @@ import java.util.Locale;
  */
 public final class HorizontalCalendar {
 
-    //region private Fields
-    HorizontalCalendarView calendarView;
-    HorizontalCalendarAdapter mCalendarAdapter;
-    ArrayList<Date> mListDays;
-    boolean loading;
-    private final DateHandler handler;
-
-    //Start & End Dates
-    private Date dateStartCalendar;
-    private Date dateEndCalendar;
-
-    //Interface events
-    HorizontalCalendarListener calendarListener;
-
     final RecyclerView.OnScrollListener onScrollListener = new HorizontalCalendarScrollListener();
-
+    private final DateHandler handler;
     //RootView
     private final View rootView;
     private final int calendarId;
     //Number of Dates to Show on Screen
     private final int numberOfDatesOnScreen;
-    /* Format, Colors & Font Sizes*/
-    private SimpleDateFormat dateFormat;
     private final String formatDayName;
     private final String formatDayNumber;
     private final String formatMonth;
+    private final boolean showMonthName;
+    private final boolean showDayName;
+    //region private Fields
+    HorizontalCalendarView calendarView;
+    HorizontalCalendarAdapter mCalendarAdapter;
+    ArrayList<Date> mListDays;
+    boolean loading;
+    //Interface events
+    HorizontalCalendarListener calendarListener;
+    //Start & End Dates
+    private Date dateStartCalendar;
+    private Date dateEndCalendar;
+    /* Format, Colors & Font Sizes*/
+    private SimpleDateFormat dateFormat;
     private int textColorNormal, textColorSelected;
     private Drawable selectedDateBackground;
     private Integer selectorColor;
     private float textSizeMonthName, textSizeDayNumber, textSizeDayName;
-
-    private final boolean showMonthName;
-    private final boolean showDayName;
     //endregion
 
     /**
@@ -542,6 +537,30 @@ public final class HorizontalCalendar {
         }
     }
 
+    private static class DateHandler extends Handler {
+
+        private final WeakReference<HorizontalCalendar> horizontalCalendar;
+        public Date date = null;
+        public boolean immediate = true;
+
+        public DateHandler(HorizontalCalendar horizontalCalendar, Date defaultDate) {
+            this.horizontalCalendar = new WeakReference<>(horizontalCalendar);
+            this.date = defaultDate;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            HorizontalCalendar calendar = horizontalCalendar.get();
+            if (calendar != null) {
+                calendar.loading = false;
+                if (date != null) {
+                    calendar.selectDate(date, immediate);
+                }
+
+            }
+        }
+    }
+
     private class InitializeDatesList extends AsyncTask<Void, Void, Void> {
 
         InitializeDatesList() {
@@ -592,34 +611,10 @@ public final class HorizontalCalendar {
         }
     }
 
-    private static class DateHandler extends Handler {
-
-        private final WeakReference<HorizontalCalendar> horizontalCalendar;
-        public Date date = null;
-        public boolean immediate = true;
-
-        public DateHandler(HorizontalCalendar horizontalCalendar, Date defaultDate) {
-            this.horizontalCalendar = new WeakReference<>(horizontalCalendar);
-            this.date = defaultDate;
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            HorizontalCalendar calendar = horizontalCalendar.get();
-            if (calendar != null) {
-                calendar.loading = false;
-                if (date != null) {
-                    calendar.selectDate(date, immediate);
-                }
-
-            }
-        }
-    }
-
     private class HorizontalCalendarScrollListener extends RecyclerView.OnScrollListener {
 
-        int lastSelectedItem = -1;
         final Runnable selectedItemRefresher = new SelectedItemRefresher();
+        int lastSelectedItem = -1;
 
         HorizontalCalendarScrollListener() {
         }
