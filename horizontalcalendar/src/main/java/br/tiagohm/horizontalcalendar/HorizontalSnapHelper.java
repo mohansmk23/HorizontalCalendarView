@@ -28,8 +28,9 @@ public class HorizontalSnapHelper extends LinearSnapHelper {
                 }
                 selectedItemPosition = layoutManager.getPosition(snapView);
             }
-
-            horizontalCalendar.calendarListener.onDateSelected(horizontalCalendar.getDateAt(selectedItemPosition), selectedItemPosition);
+            if (horizontalCalendar.calendarListener != null) {
+                horizontalCalendar.calendarListener.onDateSelected(horizontalCalendar.getDateAt(selectedItemPosition), selectedItemPosition);
+            }
         }
 
         return snapView;
