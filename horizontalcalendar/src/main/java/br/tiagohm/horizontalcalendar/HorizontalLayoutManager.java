@@ -1,4 +1,4 @@
-package devs.mulham.horizontalcalendar;
+package br.tiagohm.horizontalcalendar;
 
 import android.content.Context;
 import android.graphics.PointF;

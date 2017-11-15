@@ -1,4 +1,4 @@
-package devs.mulham.horizontalcalendar;
+package br.tiagohm.horizontalcalendar;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

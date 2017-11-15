@@ -1,4 +1,4 @@
-package devs.mulham.horizontalcalendar;
+package br.tiagohm.horizontalcalendar;
 
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearSnapHelper;

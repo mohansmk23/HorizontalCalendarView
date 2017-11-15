@@ -1,4 +1,4 @@
-package devs.mulham.raee.sample;
+package br.tiagohm.raee.sample;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,8 +16,8 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import devs.mulham.horizontalcalendar.HorizontalCalendar;
-import devs.mulham.horizontalcalendar.HorizontalCalendarListener;
+import br.tiagohm.horizontalcalendar.HorizontalCalendar;
+import br.tiagohm.horizontalcalendar.HorizontalCalendarListener;
 
 public class MainActivity extends AppCompatActivity {
 

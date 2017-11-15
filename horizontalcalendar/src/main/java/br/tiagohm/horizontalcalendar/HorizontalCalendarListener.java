@@ -1,4 +1,4 @@
-package devs.mulham.horizontalcalendar;
+package br.tiagohm.horizontalcalendar;
 
 import java.util.Date;
 
