@@ -29,6 +29,9 @@ public final class HorizontalCalendar {
 
     final RecyclerView.OnScrollListener onScrollListener = new HorizontalCalendarScrollListener();
     private final DateHandler handler;
+    private final Calendar startCalendar = Calendar.getInstance();
+    private final Calendar endCalendar = Calendar.getInstance();
+    private final Calendar dateCalendar = GregorianCalendar.getInstance();
     //RootView
     private final View rootView;
     private final int calendarId;
@@ -37,8 +40,10 @@ public final class HorizontalCalendar {
     private final String formatDayName;
     private final String formatDayNumber;
     private final String formatMonth;
+    private final String formatYear;
     private final boolean showMonthName;
     private final boolean showDayName;
+    private final boolean showYearAndMonth;
     //region private Fields
     HorizontalCalendarView calendarView;
     HorizontalCalendarAdapter mCalendarAdapter;
@@ -51,6 +56,7 @@ public final class HorizontalCalendar {
     private Date dateEndCalendar;
     /* Format, Colors & Font Sizes*/
     private SimpleDateFormat dateFormat;
+    private SimpleDateFormat dateYearFormat;
     private int textColorNormal, textColorSelected;
     private Drawable selectedDateBackground;
     private Integer selectorColor;
@@ -70,6 +76,7 @@ public final class HorizontalCalendar {
         this.formatDayName = builder.formatDayName;
         this.formatDayNumber = builder.formatDayNumber;
         this.formatMonth = builder.formatMonth;
+        this.formatYear = builder.formatYear;
         this.textSizeMonthName = builder.textSizeMonthName;
         this.textSizeDayNumber = builder.textSizeDayNumber;
         this.textSizeDayName = builder.textSizeDayName;
@@ -78,6 +85,7 @@ public final class HorizontalCalendar {
         this.dateEndCalendar = builder.dateEndCalendar;
         this.showDayName = builder.showDayName;
         this.showMonthName = builder.showMonthName;
+        this.showYearAndMonth = builder.showYearAndMonth;
 
         handler = new DateHandler(this, builder.defaultSelectedDate);
     }
@@ -86,6 +94,7 @@ public final class HorizontalCalendar {
     void loadHorizontalCalendar() {
 
         dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        dateYearFormat = new SimpleDateFormat("MM/yyyy", Locale.getDefault());
 
         mListDays = new ArrayList<>();
         calendarView = (HorizontalCalendarView) rootView.findViewById(calendarId);
@@ -246,6 +255,10 @@ public final class HorizontalCalendar {
         return formatDayNumber;
     }
 
+    public String getFormatYear() {
+        return formatYear;
+    }
+
     public String getFormatMonth() {
         return formatMonth;
     }
@@ -256,6 +269,10 @@ public final class HorizontalCalendar {
 
     public boolean isShowMonthName() {
         return showMonthName;
+    }
+
+    public boolean isShowYearAndMonth() {
+        return showYearAndMonth;
     }
 
     public int getNumberOfDatesOnScreen() {
@@ -323,28 +340,63 @@ public final class HorizontalCalendar {
      * @return position of date in Calendar, or -1 if date does not exist
      */
     public int positionOfDate(Date date) {
-        if (date.after(dateEndCalendar) || date.before(dateStartCalendar)) {
+        dateCalendar.setTime(date);
+        startCalendar.setTime(dateStartCalendar);
+        endCalendar.setTime(dateEndCalendar);
+
+        if (isShowYearAndMonth()) {
+            startCalendar.set(Calendar.DATE, 1);
+            startCalendar.set(Calendar.HOUR_OF_DAY, 0);
+            startCalendar.set(Calendar.MINUTE, 0);
+            startCalendar.set(Calendar.SECOND, 0);
+            endCalendar.set(Calendar.DATE, endCalendar.getActualMaximum(Calendar.DATE));
+            endCalendar.set(Calendar.HOUR_OF_DAY, 23);
+            endCalendar.set(Calendar.MINUTE, 59);
+            endCalendar.set(Calendar.SECOND, 59);
+        }
+        //Está fora do intervalo.
+        if (date.after(endCalendar.getTime()) || date.before(startCalendar.getTime())) {
             return -1;
-        } else if (isDatesDaysEquals(date, dateStartCalendar)) {
+        }
+        //Inicio.
+        else if (isDatesDaysEquals(date, dateStartCalendar)) {
             return 0;
-        } else if (isDatesDaysEquals(date, dateEndCalendar)) {
+        }
+        //Fim.
+        else if (isDatesDaysEquals(date, dateEndCalendar)) {
             return mListDays.size() - 1;
         }
+        //Calcular posicao para mes e ano.
+        else if (isShowYearAndMonth()) {
+            int diffYear = dateCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
+            int diffMonth = diffYear * 12 + dateCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
+            int position = diffMonth + 2;
+            return position;
+        }
+        //Calcular posicao para dia e mes.
+        else {
+            startCalendar.set(Calendar.HOUR_OF_DAY, 0);
+            startCalendar.set(Calendar.MINUTE, 0);
+            startCalendar.set(Calendar.SECOND, 0);
+            dateCalendar.set(Calendar.HOUR_OF_DAY, 23);
+            dateCalendar.set(Calendar.MINUTE, 59);
+            dateCalendar.set(Calendar.SECOND, 59);
 
-        long diff = date.getTime() - dateStartCalendar.getTime(); //result in millis
-        long days = (diff / (24 * 60 * 60 * 1000));
+            long diff = dateCalendar.getTimeInMillis() - startCalendar.getTimeInMillis(); //result in millis
+            long days = (diff / (24 * 60 * 60 * 1000));
 
-        int position = (int) days + 2;
+            int position = (int) days + 2;
 
-        return position;
+            return position;
+        }
     }
 
     /**
      * @return true if dates are equal
      */
     public boolean isDatesDaysEquals(Date date1, Date date2) {
-
-        return dateFormat.format(date1).equals(dateFormat.format(date2));
+        return isShowYearAndMonth() ? dateYearFormat.format(date1).equals(dateYearFormat.format(date2)) :
+                dateFormat.format(date1).equals(dateFormat.format(date2));
     }
 
     public static class Builder {
@@ -363,6 +415,7 @@ public final class HorizontalCalendar {
         String formatDayName;
         String formatDayNumber;
         String formatMonth;
+        String formatYear;
         int textColorNormal, textColorSelected;
         Drawable selectedDateBackground;
         Integer selectorColor;
@@ -370,6 +423,7 @@ public final class HorizontalCalendar {
 
         boolean showMonthName = true;
         boolean showDayName = true;
+        boolean showYearAndMonth = false;
         Date defaultSelectedDate;
 
         /**
@@ -422,6 +476,11 @@ public final class HorizontalCalendar {
 
         public Builder monthFormat(String format) {
             this.formatMonth = format;
+            return this;
+        }
+
+        public Builder yearFormat(String format) {
+            this.formatYear = format;
             return this;
         }
 
@@ -496,6 +555,11 @@ public final class HorizontalCalendar {
             return this;
         }
 
+        public Builder showYearAndMonth(boolean value) {
+            showYearAndMonth = value;
+            return this;
+        }
+
         /**
          * @return Instance of {@link HorizontalCalendar} initiated with builder settings
          */
@@ -512,14 +576,17 @@ public final class HorizontalCalendar {
                 numberOfDatesOnScreen = 5;
             }
 
-            if ((formatDayName == null) && showDayName) {
+            if (formatDayName == null && showDayName) {
                 formatDayName = "EEE";
             }
             if (formatDayNumber == null) {
                 formatDayNumber = "dd";
             }
-            if ((formatMonth == null) && showMonthName) {
+            if (formatMonth == null && (showMonthName || showYearAndMonth)) {
                 formatMonth = "MMM";
+            }
+            if (formatYear == null && showYearAndMonth) {
+                formatYear = "yyyy";
             }
             if (dateStartCalendar == null) {
                 Calendar c = Calendar.getInstance();
@@ -579,17 +646,31 @@ public final class HorizontalCalendar {
             GregorianCalendar calendar = new GregorianCalendar();
 
             calendar.setTime(dateStartCalendar);
-            calendar.add(Calendar.DATE, -(numberOfDatesOnScreen / 2));
+            if (isShowYearAndMonth()) {
+                calendar.set(Calendar.DATE, 1);
+                calendar.add(Calendar.MONTH, -(numberOfDatesOnScreen / 2));
+            } else {
+                calendar.add(Calendar.DATE, -(numberOfDatesOnScreen / 2));
+            }
             Date dateStartBefore = calendar.getTime();
             calendar.setTime(dateEndCalendar);
-            calendar.add(Calendar.DATE, numberOfDatesOnScreen / 2);
+            if (isShowYearAndMonth()) {
+                calendar.set(Calendar.DATE, 1);
+                calendar.add(Calendar.MONTH, numberOfDatesOnScreen / 2);
+            } else {
+                calendar.add(Calendar.DATE, numberOfDatesOnScreen / 2);
+            }
             Date dateEndAfter = calendar.getTime();
 
             Date date = dateStartBefore;
             while (!date.after(dateEndAfter)) {
                 mListDays.add(date);
                 calendar.setTime(date);
-                calendar.add(Calendar.DATE, 1);
+                if (isShowYearAndMonth()) {
+                    calendar.add(Calendar.MONTH, 1);
+                } else {
+                    calendar.add(Calendar.DATE, 1);
+                }
                 date = calendar.getTime();
             }
 

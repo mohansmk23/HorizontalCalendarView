@@ -3,7 +3,6 @@ package br.tiagohm.raee.sample;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -34,13 +33,13 @@ public class MainActivity extends AppCompatActivity {
         Calendar endDate = Calendar.getInstance();
         endDate.add(Calendar.MONTH, 2);
 
-        /** start 2 months ago from now */
+        /** start 5 months ago from now */
         Calendar startDate = Calendar.getInstance();
-        startDate.add(Calendar.MONTH, -2);
+        startDate.add(Calendar.MONTH, -5);
 
         final Calendar defaultDate = Calendar.getInstance();
-        defaultDate.add(Calendar.MONTH, -1);
-        defaultDate.add(Calendar.DAY_OF_WEEK, +5);
+        defaultDate.add(Calendar.MONTH, -2);
+        defaultDate.add(Calendar.DATE, 1);
 
         horizontalCalendar = new HorizontalCalendar.Builder(this, R.id.calendarView)
                 .startDate(startDate.getTime())
@@ -49,9 +48,10 @@ public class MainActivity extends AppCompatActivity {
                 .dayNameFormat("EEE")
                 .dayNumberFormat("dd")
                 .monthFormat("MMM")
+                .yearFormat("yyyy")
                 .showDayName(true)
                 .showMonthName(true)
-                .selectedDateBackground(ContextCompat.getDrawable(this, R.drawable.sample_selected_background))
+                .showYearAndMonth(true)
                 .defaultSelectedDate(defaultDate.getTime())
                 .textColor(Color.LTGRAY, Color.WHITE)
                 .build();

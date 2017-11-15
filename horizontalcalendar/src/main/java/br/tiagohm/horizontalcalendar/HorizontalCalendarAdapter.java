@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -28,11 +29,14 @@ import java.util.List;
 class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarAdapter.DayViewHolder> {
 
     private final Context context;
+    private final Calendar startCalendar = Calendar.getInstance();
+    private final Calendar endCalendar = Calendar.getInstance();
     private ArrayList<Date> datesList;
     private int widthCell;
     private HorizontalCalendar horizontalCalendar;
     private int numberOfDates;
     private HorizontalCalendarView horizontalCalendarView;
+
 
     HorizontalCalendarAdapter(HorizontalCalendarView horizontalCalendarView, ArrayList<Date> datesList) {
         this.horizontalCalendarView = horizontalCalendarView;
@@ -63,8 +67,22 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
 
                 Date date = datesList.get(holder.getAdapterPosition());
 
-                if (!date.before(horizontalCalendar.getDateStartCalendar())
-                        && !date.after(horizontalCalendar.getDateEndCalendar())) {
+                startCalendar.setTime(horizontalCalendar.getDateStartCalendar());
+                endCalendar.setTime(horizontalCalendar.getDateEndCalendar());
+
+                if (horizontalCalendar.isShowYearAndMonth()) {
+                    startCalendar.set(Calendar.DATE, 1);
+                    startCalendar.set(Calendar.HOUR_OF_DAY, 0);
+                    startCalendar.set(Calendar.MINUTE, 0);
+                    startCalendar.set(Calendar.SECOND, 0);
+                    endCalendar.set(Calendar.DATE, endCalendar.getActualMaximum(Calendar.DATE));
+                    endCalendar.set(Calendar.HOUR_OF_DAY, 23);
+                    endCalendar.set(Calendar.MINUTE, 59);
+                    endCalendar.set(Calendar.SECOND, 59);
+                }
+
+                if (!date.before(startCalendar.getTime())
+                        && !date.after(endCalendar.getTime())) {
                     horizontalCalendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_SLOW);
                     horizontalCalendar.centerCalendarToPosition(holder.getAdapterPosition());
                 }
@@ -117,24 +135,29 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
             holder.selectionView.setVisibility(View.INVISIBLE);
         }
 
-        holder.txtDayNumber.setText(DateFormat.format(horizontalCalendar.getFormatDayNumber(), day).toString());
+        if (horizontalCalendar.isShowYearAndMonth()) {
+            holder.txtDayNumber.setText(DateFormat.format(horizontalCalendar.getFormatMonth(), day).toString());
+            holder.txtMonthName.setText(DateFormat.format(horizontalCalendar.getFormatYear(), day).toString());
+        } else {
+            holder.txtDayNumber.setText(DateFormat.format(horizontalCalendar.getFormatDayNumber(), day).toString());
+            if (horizontalCalendar.isShowMonthName()) {
+                holder.txtMonthName.setText(DateFormat.format(horizontalCalendar.getFormatMonth(), day).toString());
+                holder.txtMonthName.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                        horizontalCalendar.getTextSizeMonthName());
+            } else {
+                holder.txtMonthName.setVisibility(View.GONE);
+            }
+        }
+
         holder.txtDayNumber.setTextSize(TypedValue.COMPLEX_UNIT_SP,
                 horizontalCalendar.getTextSizeDayNumber());
 
-        if (horizontalCalendar.isShowDayName()) {
+        if (!horizontalCalendar.isShowYearAndMonth() && horizontalCalendar.isShowDayName()) {
             holder.txtDayName.setText(DateFormat.format(horizontalCalendar.getFormatDayName(), day).toString());
             holder.txtDayName.setTextSize(TypedValue.COMPLEX_UNIT_SP,
                     horizontalCalendar.getTextSizeDayName());
         } else {
             holder.txtDayName.setVisibility(View.GONE);
-        }
-
-        if (horizontalCalendar.isShowMonthName()) {
-            holder.txtMonthName.setText(DateFormat.format(horizontalCalendar.getFormatMonth(), day).toString());
-            holder.txtMonthName.setTextSize(TypedValue.COMPLEX_UNIT_SP,
-                    horizontalCalendar.getTextSizeMonthName());
-        } else {
-            holder.txtMonthName.setVisibility(View.GONE);
         }
     }
 
