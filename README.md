@@ -1,7 +1,6 @@
 # Horizontal Calendar
 
-[ ![Download](https://api.bintray.com/packages/mulham-raee/maven/horizontal-calendar/images/download.svg) ](https://bintray.com/mulham-raee/maven/horizontal-calendar/_latestVersion)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![](https://jitpack.io/v/tiagohm/HorizontalCalendarView.svg)](https://jitpack.io/#tiagohm/HorizontalCalendarView)
 
 A material horizontal calendar view for Android based on `RecyclerView`.
 
@@ -12,16 +11,17 @@ The library is hosted on jcenter, add this to your **build.gradle**:
 
 ```gradle
 repositories {
-      jcenter()
+      ...
+      maven { url 'https://jitpack.io' }
     }
     
     dependencies {
-      compile 'devs.mulham.horizontalcalendar:horizontalcalendar:1.2.0'
+      compile 'com.github.tiagohm:HorizontalCalendarView:VERSION'
     }
 ```
 
 ## Prerequisites
-The minimum API level supported by this library is **API 9 (GINGERBREAD)**.
+The minimum API level supported by this library is **API 14**.
 
 ## Usage
 - Add `HorizontalCalendarView` to your layout file, for example:
@@ -128,6 +128,7 @@ HorizontalCalendar horizontalCalendar = new HorizontalCalendar.Builder(this, R.i
                 .monthFormat("MMM") 	  // Month format
                 .showDayName(true)	  // Show or Hide dayName text
                 .showMonthName(true)	  // Show or Hide month text
+                .showYearAndMonth(true) //Show year and month text and hide dayNumber and dayName text
                 .textColor(Color.LTGRAY, Color.WHITE)    // Text color for none selected Dates, Text color for selected Date.
                 .selectedDateBackground(Drawable)  // Background Drawable of the selected date cell.
                 .selectorColor(Color.RED)   // Color of the selection indicator bar (default to colorAccent).
